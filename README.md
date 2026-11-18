@@ -36,7 +36,7 @@ To try the editor without capturing a page, clicking the icon on a browser-inter
 the editor with an explanatory capture message. Choose **Open image** or **Try a sample screenshot**.
 The sample contains fictional details only.
 
-**Validation status:** 20 Node tests, static/build checks and 16 browser checks passed. Browser
+**Validation status:** 20 Node tests, static/build checks and 17 browser checks passed. Browser
 checks covered the packaged editor/OCR on loopback, not an installed extension, because the
 available headless browser cannot run extension service workers. Test the updated unpacked
 extension in Chrome/Edge before release. See `docs/VALIDATION.md`.
