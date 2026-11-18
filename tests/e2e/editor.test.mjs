@@ -91,7 +91,15 @@ try {
   await page.locator('#undo').click();
   assert.equal(await page.locator('#count').textContent(), '0');
   check('Real bundled OCR finds email/phone; review gates export; applying is one undoable transaction');
-  await page.locator('#scan').click(); await page.locator('#cancel-scan').click();
+  // A warm OCR engine can finish in about a second, faster than a separate click can land.
+  // Start and cancel in the same task so the cancel path is tested deterministically.
+  const cancelVisible = await page.evaluate(() => {
+    document.querySelector('#scan').click();
+    const visible = !document.querySelector('#scan-progress').hidden;
+    document.querySelector('#cancel-scan').click();
+    return visible;
+  });
+  assert.equal(cancelVisible, true, 'Cancel scan should be shown while scanning');
   await page.waitForFunction(() => !document.querySelector('#scan').disabled);
   assert.match(await page.locator('#status').textContent(), /cancelled/);
   assert.equal(await page.locator('#count').textContent(), '0');
@@ -224,6 +232,8 @@ try {
   check('Zoom and narrow layout work without horizontal page overflow');
 
   if (!webMode) {
+  // Changing only the #hash does not reload the page, so load a blank page first (real captures open a new tab).
+  await page.goto('about:blank');
   await page.goto(`${editorUrl}#${crypto.randomUUID()}`);
   await page.waitForFunction(() => document.querySelector('#status').textContent.includes('expired'));
   assert.equal(new URL(page.url()).hash, '');
