@@ -1,0 +1,72 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="referrer" content="no-referrer">
+  <meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'self' 'wasm-unsafe-eval'; style-src 'self'; img-src 'self' data: blob:; connect-src 'self'; worker-src 'self'; object-src 'none'; base-uri 'none'; form-action 'none'; frame-src 'none'">
+  <title>Veil — Screenshot Privacy</title>
+  <link rel="icon" href="icons/32.png">
+  <link rel="stylesheet" href="editor.css">
+  <script type="module" src="src/editor/index.js"></script>
+</head>
+<body>
+  <header class="topbar">
+    <a class="brand" href="editor.html" aria-label="Veil home"><span class="brand-icon" aria-hidden="true">v</span><span>veil<span class="brand-dot">.</span></span></a>
+    <span class="brand-label">SCREENSHOT PRIVACY</span>
+    <div class="top-actions"><span class="privacy-pill"><span aria-hidden="true">●</span> On your device</span><button id="help" class="text-button">How it works</button><button id="open" class="button secondary">Open image</button></div>
+    <input id="file" type="file" accept="image/png,image/jpeg,image/webp" hidden>
+  </header>
+
+  <main>
+    <section class="intro"><div><p class="eyebrow">A LITTLE PRIVACY. A LOT OF PEACE OF MIND.</p><h1>Share the moment.<br><span>Keep the details.</span></h1><p class="intro-copy">Cover sensitive information before your screenshot goes anywhere.</p></div><div class="intro-note"><span class="note-icon" aria-hidden="true">↗</span><p>Your image stays here.<br><strong>Only you choose what leaves.</strong></p></div></section>
+
+    <section class="workspace" aria-label="Screenshot editor">
+      <aside class="sidebar">
+        <div class="section-title"><span class="step">01</span><h2>Cover the details</h2></div>
+        <p class="muted">Drag a box over anything you want to keep private.</p>
+        <div class="tool-selected"><span aria-hidden="true">▣</span><div><strong>Solid cover</strong><small>Replaces the pixels on export</small></div><span class="tool-check" aria-hidden="true">✓</span></div>
+        <fieldset class="color-field"><legend>Cover color</legend><label><input type="radio" name="color" value="#111827" checked><span class="swatch dark"></span> Ink</label><label><input type="radio" name="color" value="#ffffff"><span class="swatch light"></span> Paper</label><label><input type="radio" name="color" value="custom"> Custom</label><input id="custom-color" type="color" value="#2563eb" aria-label="Custom cover color"></fieldset>
+        <div class="divider"></div>
+        <section id="suggestion-panel" class="suggestion-panel" aria-label="Sensitive detail suggestions">
+          <div class="section-title compact"><h2>Smart suggestions</h2><span class="local-badge">LOCAL</span></div>
+          <p class="muted">Find text you may want to hide. You review every suggestion.</p>
+          <button id="scan" class="button secondary" disabled>Find sensitive details</button>
+          <div id="scan-progress" hidden><progress id="scan-meter" max="100" value="0" aria-label="Scanning progress"></progress><span id="scan-label" role="status">Preparing local scan…</span><button id="cancel-scan" class="text-button">Cancel scan</button></div>
+          <p id="scan-summary" class="muted">Works on screenshots and imported images. English / Latin text.</p>
+          <div id="suggestion-review" hidden>
+            <p class="suggestion-warning">Amber outlines are not redactions.</p>
+            <label class="suggestion-select-all"><input id="select-suggestions" type="checkbox" checked> Select all</label>
+            <ol id="suggestions" class="suggestion-list" aria-label="Suggested sensitive areas"></ol>
+            <button id="apply-suggestions" class="button primary">Cover selected</button>
+            <button id="dismiss-suggestions" class="text-button">Dismiss suggestions</button>
+          </div>
+          <p class="scan-note">May miss details or suggest harmless text. Always review the whole image.</p>
+        </section>
+        <div class="divider"></div>
+        <div class="section-title compact"><h2>Covered areas</h2><span id="count" class="count">0</span></div>
+        <p id="areas-empty" class="muted areas-empty">Your redactions will appear here.</p>
+        <ol id="regions" class="region-list" aria-label="Redaction areas"></ol>
+        <details class="precise"><summary>Add by coordinates</summary><p class="muted">Use original-image pixels. This also works without a mouse.</p><form id="coordinates"><div class="coordinate-grid"><label>X<input id="region-x" type="number" min="0" step="1" value="0" required></label><label>Y<input id="region-y" type="number" min="0" step="1" value="0" required></label><label>Width<input id="region-width" type="number" min="1" step="1" value="100" required></label><label>Height<input id="region-height" type="number" min="1" step="1" value="40" required></label></div><button id="add-region" class="button secondary" type="submit" disabled>Add cover</button></form></details>
+        <div class="sidebar-bottom"><span class="lock-mark" aria-hidden="true">◇</span><p>No uploads. No cloud history.<br>No account needed.</p></div>
+      </aside>
+
+      <div class="editor-panel">
+        <div class="editor-toolbar"><div class="image-label"><span class="live-dot" aria-hidden="true"></span><span id="image-label">Your private workspace</span></div><div class="edit-actions"><button id="undo" class="icon-button" title="Undo (Ctrl/Cmd+Z)" aria-label="Undo" disabled>↶</button><button id="redo" class="icon-button" title="Redo (Ctrl/Cmd+Shift+Z)" aria-label="Redo" disabled>↷</button><span class="toolbar-line"></span><label class="zoom-label">View <select id="zoom" disabled aria-label="Image zoom"><option value="fit">Fit</option><option value="1">100%</option><option value="2">200%</option></select></label></div></div>
+        <div id="stage" class="stage">
+          <div id="empty" class="empty-state"><div class="empty-art" aria-hidden="true"><div class="art-window"><span class="art-dot"></span><span class="art-line"></span><span class="art-cover"></span><span class="art-line short"></span></div><span class="art-badge">✓</span></div><h2>A safer screenshot starts here.</h2><p>Drop an image here or open one from your device.<br>Your original file stays untouched.</p><button id="choose" class="button primary">Choose an image <span aria-hidden="true">↗</span></button><button id="demo" class="text-button">Try a sample screenshot</button><span class="file-hint">PNG, JPEG or WebP · Up to 20 MB / 24 MP</span></div>
+          <div id="canvas-wrap" class="canvas-wrap" hidden><canvas id="canvas" aria-label="Screenshot with redactions. Drag to cover an area or use Add by coordinates."></canvas><canvas id="overlay" aria-hidden="true"></canvas></div>
+        </div>
+        <div class="canvas-footer"><span id="dimensions">NOTHING UPLOADED. EVER.</span><span id="canvas-tip">Capture a browser tab using the Veil toolbar icon.</span></div>
+      </div>
+    </section>
+
+    <section class="export-bar"><div class="export-description"><span class="step">02</span><div><h2>Review, then share.</h2><p>Check every sensitive detail. Your export is a flattened PNG.</p></div></div><div class="export-actions"><button id="discard" class="text-button" disabled>Discard image</button><button id="copy" class="button secondary" disabled title="Preview for clipboard (Ctrl/Cmd+Shift+C)">Copy image</button><button id="export" title="Preview export (Ctrl/Cmd+Shift+E)" class="button primary" disabled>Export PNG <span aria-hidden="true">↓</span></button></div></section>
+    <div id="status" class="status" role="status" aria-live="polite">Ready when you are.</div>
+    <footer class="page-footer"><span>VEIL / LOCAL BY DESIGN</span><span>Local suggestions · You decide what to cover</span></footer>
+  </main>
+  <dialog id="guide-dialog" class="guide-dialog" aria-labelledby="guide-title"><button id="guide-close" class="guide-close" aria-label="Close guide">×</button><span id="guide-step" class="dialog-tag"></span><div aria-live="polite" aria-atomic="true"><h2 id="guide-title"></h2><img id="guide-picture" class="guide-picture" alt=""><p id="guide-copy"></p></div><p class="shortcut-note">Capture: Alt/Option + Shift + V<br>Preview: Ctrl/Cmd + Shift + E · Copy preview: Ctrl/Cmd + Shift + C<br>Customize capture at chrome://extensions/shortcuts</p><div class="guide-privacy">On-device processing · No uploads · No account</div><button id="guide-practice" class="text-button">Practice with a fictional sample</button><div class="dialog-actions"><button id="guide-back" class="button secondary">Back</button><button id="guide-next" class="button primary">Next step →</button></div></dialog>
+  <dialog id="review-dialog"><form method="dialog"><span class="dialog-tag">FINAL CHECK</span><h2>Preview your finished image</h2><div class="export-preview"><img id="export-preview" alt="Exact flattened PNG ready to save or copy"></div><label class="preview-size"><input id="preview-native" type="checkbox"> Inspect at 100% (scroll to check edges)</label><p id="export-error" role="alert"></p><p id="review-description">Review the image and confirm that all sensitive details are covered.</p><p class="muted">The downloaded PNG contains the covered pixels. The original remains in this editor until you discard it or close the tab.</p><label class="review-checkbox"><input id="review-confirm" type="checkbox"> I checked the image for sensitive information.</label><div class="dialog-actions"><button value="cancel" class="button secondary">Back to editing</button><button id="confirm-copy" type="button" class="button secondary" disabled>Copy image</button><button id="confirm-export" type="button" value="export" class="button primary" disabled>Save PNG</button></div></form></dialog>
+  <dialog id="discard-dialog"><form method="dialog"><span class="dialog-tag">CLEAR WORKSPACE</span><h2>Discard this image?</h2><p>Your image and redactions will be removed from this editor. Files already saved on your device stay unchanged.</p><div class="dialog-actions"><button value="cancel" class="button secondary">Keep editing</button><button value="discard" class="button primary">Discard</button></div></form></dialog>
+</body>
+</html>
